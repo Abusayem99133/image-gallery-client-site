@@ -6,12 +6,19 @@ const Gallery = () => {
   const [gallery, setGallery] = useState([]);
   const [model, setModel] = useState(false);
   const [tempImage, setTempImage] = useState("");
+  const [featureImage, setFeatureImage] = useState("");
+  const [selectedImages, setSelectedImages] = useState([]); // Store selected image ids
 
   // Fetch gallery data from JSON file
   useEffect(() => {
     fetch("./gallery.json")
       .then((res) => res.json())
-      .then((data) => setGallery(data));
+      .then((data) => {
+        setGallery(data);
+        if (data.length > 0) {
+          setFeatureImage(data[0].image); // Set the first image as the feature image
+        }
+      });
   }, []);
 
   // Open image in modal
@@ -33,12 +40,40 @@ const Gallery = () => {
     reorderedGallery.splice(destination.index, 0, movedItem); // Insert at the dropped location
 
     setGallery(reorderedGallery); // Update state with new order
+    setFeatureImage(reorderedGallery[0].image); // Update the first image as the feature image
+  };
+
+  // Select or deselect an image
+  const toggleSelectImage = (id) => {
+    if (selectedImages.includes(id)) {
+      setSelectedImages(selectedImages.filter((imgId) => imgId !== id));
+    } else {
+      setSelectedImages([...selectedImages, id]);
+    }
+  };
+
+  // Delete selected images
+  const deleteSelectedImages = () => {
+    const updatedGallery = gallery.filter(
+      (gal) => !selectedImages.includes(gal.id)
+    );
+    setGallery(updatedGallery);
+    setSelectedImages([]);
+    if (updatedGallery.length > 0) {
+      setFeatureImage(updatedGallery[0].image); // Set new feature image
+    } else {
+      setFeatureImage("");
+    }
   };
 
   return (
     <>
+      <div className="feature-image">
+        <h3>Feature Image:</h3>
+        {featureImage && <img src={featureImage} alt="Feature" />}
+      </div>
+
       <DragDropContext onDragEnd={onDragEnd}>
-        {/* Set droppableId to uniquely identify this Droppable */}
         <Droppable droppableId="gallery-droppable">
           {(provided) => (
             <div
@@ -49,28 +84,42 @@ const Gallery = () => {
               {gallery.map((gal, index) => (
                 <Draggable
                   key={gal.id}
-                  draggableId={gal.id.toString()} // Draggable ID must be a string
+                  draggableId={gal.id.toString()}
                   index={index}
                 >
                   {(provided) => (
                     <div
-                      className="picture"
-                      onClick={() => getImg(gal.image)}
+                      className={`picture ${
+                        selectedImages.includes(gal.id) ? "selected" : ""
+                      }`}
+                      onClick={() => toggleSelectImage(gal.id)}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <img src={gal.image} alt="" />
+                      <input
+                        type="checkbox"
+                        checked={selectedImages.includes(gal.id)}
+                        onChange={() => toggleSelectImage(gal.id)}
+                        className="checkbox-overlay"
+                      />
+                      <img src={gal.image} alt={gal.name} />
                     </div>
                   )}
                 </Draggable>
               ))}
-              {/* Placeholder for drag-and-drop */}
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
+
+      {/* Delete Button */}
+      {selectedImages.length > 0 && (
+        <button className="delete-button" onClick={deleteSelectedImages}>
+          Delete Selected Images
+        </button>
+      )}
 
       {/* Image modal */}
       <div

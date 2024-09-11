@@ -69,3 +69,34 @@
     padding: 20px 0 20px;
     margin: 0 auto;
 } */
+.picture {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .picture img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .selected {
+    border: 2px solid red; /* Visual indication of selected image */
+  }
+  
+  .checkbox-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    transform: scale(1.5);
+  }
+  
+  .delete-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
