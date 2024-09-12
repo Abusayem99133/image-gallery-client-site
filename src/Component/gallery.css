@@ -1,130 +1,18 @@
-.gallery{
-    -webkit-column-count: 3;
-    -moz-column-count: 3;
-    column-count: 3;
-    -webkit-column-width: 33%;
-    -moz-column-width: 33%;
-    column-width: 33%;
-    padding:0 12px ;
+.draggable-item {
+  padding: 8px;
+  border: 2px solid #ddd;
+  background-color: white;
+  transition: background-color 0.2s ease;
+  cursor: grab;
 }
-.gallery .picture{
-    -webkit-transition: all 350ms ease;
-    transition: all 350ms ease;
-    cursor: pointer;
-    margin-bottom: 12px;
+
+.draggable-item:active {
+  background-color: #f0f0f0;
+  cursor: grabbing;
 }
-.gallery .picture:hover{
-    filter: opacity(.8)
+
+.image-style {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
-@media (max-width: 991px){
-    .gallery{
-        -webkit-column-count: 2;
-        -moz-column-count: 2;
-        column-count: 2;
-       
-    }
-}
-@media (max-width: 480px){
-    .gallery{
-        -webkit-column-count: 1;
-        -moz-column-count: 1;
-        column-count: 1;
-        -webkit-column-width: 100%;
-        -moz-column-width: 100%;
-        column-width: 100%;
-       
-    }
-}
-/* image  */
-.model{
-    width: 100%;
-    height: 100vh;
-    position:fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000000;
-    transition:opacity .4s ease , visibility .4s, transform .5s ease-in-out;
-    visibility: hidden;
-    opacity: 0;
-    transform: scale(0);
-    overflow: hidden;
-    z-index: 999;
-}
-/* .model .open{
-    visibility: visible;
-    opacity: 1;
-    transform: scale(1);
-}
-.model img{
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    max-height: auto;
-    display: block;
-    line-height: 0;
-    box-sizing: border-box;
-    padding: 20px 0 20px;
-    margin: 0 auto;
-} */
-.picture {
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .picture img {
-    width: 100%;
-    height: auto;
-  }
-  
-  .selected {
-    border: 2px solid red; /* Visual indication of selected image */
-  }
-  
-  .checkbox-overlay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 2;
-    transform: scale(1.5);
-  }
-  
-  .delete-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: red;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  .picture {
-    position: relative;
-  }
-  
-  .picture img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  
-  .picture.selected {
-    border: 3px solid red; /* Highlight selected images */
-  }
-  
-  .checkbox-overlay {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    z-index: 1;
-  }
-  .model {
-    display: none;
-  }
-  
-  .model.open {
-    display: block;
-    /* Add your modal styling here */
-  }
-  
