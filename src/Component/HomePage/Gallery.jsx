@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import useAxiosPublic from "../useAxiosPublic";
 import { useForm } from "react-hook-form";
+import Images from "./Images";
 
 const image_hosting_key = import.meta.env.VITE_IMGBB_API_KEY; // Correct env key
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -80,6 +81,9 @@ const Gallery = () => {
           />
         </div>
       </form>
+      <div>
+        <Images />
+      </div>
     </div>
   );
 };
