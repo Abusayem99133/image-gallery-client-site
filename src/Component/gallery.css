@@ -99,4 +99,32 @@
     border: none;
     cursor: pointer;
   }
+  .picture {
+    position: relative;
+  }
+  
+  .picture img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .picture.selected {
+    border: 3px solid red; /* Highlight selected images */
+  }
+  
+  .checkbox-overlay {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 1;
+  }
+  .model {
+    display: none;
+  }
+  
+  .model.open {
+    display: block;
+    /* Add your modal styling here */
+  }
   
