@@ -131,9 +131,6 @@ const Images = () => {
         </div>
       ) : (
         <>
-          <button onClick={handleDelete} className="btn ">
-            Delete Selected Images
-          </button>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable-gallery">
               {(provided) => (
@@ -173,6 +170,12 @@ const Images = () => {
               )}
             </Droppable>
           </DragDropContext>
+          <button
+            onClick={handleDelete}
+            className="btn bg-purple-700 text-white mt-12"
+          >
+            Delete Selected Images
+          </button>
         </>
       )}
     </div>
