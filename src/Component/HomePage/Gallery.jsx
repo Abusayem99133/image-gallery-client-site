@@ -91,7 +91,7 @@ const Gallery = () => {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex items-center r ">
+        <div className="flex items-center  justify-center">
           <div className="my-6">
             <input
               {...register("image", { required: true })}
@@ -99,7 +99,11 @@ const Gallery = () => {
               className="file-input file-input-bordered w-full max-w-xs"
             />
           </div>
-          <input type="submit" value="Upload" className="btn " />
+          <input
+            type="submit"
+            value="Upload"
+            className="btn bg-purple-700 text-white ml-4"
+          />
         </div>
       </form>
       <div>

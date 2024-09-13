@@ -6,24 +6,22 @@ import "../../Component/gallery.css";
 const Images = () => {
   const [img, setImg] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
-  // Fetch the images from the backend
   useEffect(() => {
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
     fetch("http://localhost:5000/galleryImage")
       .then((res) => res.json())
       .then((data) => {
         setImg(data);
-        setLoading(false); // Set loading to false when fetching completes
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching images:", error);
-        setLoading(false); // Ensure loading is set to false on error
+        setLoading(false);
       });
   }, []);
 
-  // Handle drag-and-drop functionality
   const onDragEnd = (result) => {
     const { destination, source } = result;
     if (!destination || destination.index === source.index) return;
@@ -40,7 +38,6 @@ const Images = () => {
     });
   };
 
-  // Handle image selection for deletion
   const handleImageSelect = (id) => {
     setSelectedImages((prevSelected) =>
       prevSelected.includes(id)
@@ -49,7 +46,6 @@ const Images = () => {
     );
   };
 
-  // Handle multiple delete
   const handleDelete = () => {
     if (selectedImages.length === 0) {
       Swal.fire({
@@ -77,7 +73,7 @@ const Images = () => {
           icon: "info",
           allowOutsideClick: false,
           didOpen: () => {
-            Swal.showLoading(); // Show the loader
+            Swal.showLoading();
           },
         });
 
@@ -88,7 +84,7 @@ const Images = () => {
         })
           .then((res) => res.json())
           .then((data) => {
-            Swal.close(); // Close the loader
+            Swal.close();
             if (data.message === "Images deleted successfully") {
               Swal.fire({
                 title: "Deleted!",
@@ -99,7 +95,7 @@ const Images = () => {
               setImg((prevImg) =>
                 prevImg.filter((image) => !selectedImages.includes(image._id))
               );
-              setSelectedImages([]); // Reset selection
+              setSelectedImages([]);
             } else {
               Swal.fire({
                 title: "Error",
@@ -110,7 +106,7 @@ const Images = () => {
             }
           })
           .catch((error) => {
-            Swal.close(); // Close the loader
+            Swal.close();
             console.error("Error deleting images:", error);
             Swal.fire({
               title: "Error",
@@ -125,9 +121,9 @@ const Images = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {loading ? ( // Display loader while fetching
+      {loading ? (
         <div className="loader-container">
-          <div className="spinner"></div> {/* Add your spinner here */}
+          <div className="spinner"></div>
         </div>
       ) : (
         <>
