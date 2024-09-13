@@ -17,6 +17,7 @@ const Gallery = () => {
       const imageFile = new FormData();
       imageFile.append("image", data.image[0]);
 
+      // First, upload image to imgbb
       const res = await axiosPublic.post(image_hosting_api, imageFile, {
         headers: {
           "content-type": "multipart/form-data",
@@ -30,6 +31,7 @@ const Gallery = () => {
           imageUrl,
         };
 
+        // Try to push (POST) the image first
         const backendResponse = await axiosPublic.post(
           "http://localhost:5000/galleryI",
           upload,
@@ -48,6 +50,29 @@ const Gallery = () => {
             confirmButtonText: "Done",
           });
           reset();
+        } else if (backendResponse.data.exists) {
+          // If image already exists, use PATCH to update
+          const patchResponse = await axiosPublic.patch(
+            `http://localhost:5000/galleryI/${backendResponse.data.imageId}`,
+            upload,
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+            }
+          );
+
+          if (patchResponse.data.modifiedCount > 0) {
+            Swal.fire({
+              title: "Updated!",
+              text: "Image Updated Successfully",
+              icon: "success",
+              confirmButtonText: "Done",
+            });
+            reset();
+          } else {
+            throw new Error("Image update failed");
+          }
         }
       } else {
         throw new Error("Image upload failed");
@@ -66,7 +91,7 @@ const Gallery = () => {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex items-center">
+        <div className="flex items-center r ">
           <div className="my-6">
             <input
               {...register("image", { required: true })}
@@ -74,11 +99,7 @@ const Gallery = () => {
               className="file-input file-input-bordered w-full max-w-xs"
             />
           </div>
-          <input
-            type="submit"
-            value="Upload"
-            className="btn btn-secondary ml-2"
-          />
+          <input type="submit" value="Upload" className="btn " />
         </div>
       </form>
       <div>
