@@ -8,7 +8,6 @@ const Images = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch images from the server
   const reFetchImages = () => {
     setLoading(true);
     fetch("http://localhost:5000/galleryImage")
@@ -36,14 +35,14 @@ const Images = () => {
     reorderedImages.splice(destination.index, 0, movedItem);
     setImg(reorderedImages);
 
-    const featureImageId = reorderedImages[0]._id; // First image as featured
+    const featureImageId = reorderedImages[0]._id;
     fetch("http://localhost:5000/updateImageOrder", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reorderedImages, featureImageId }),
     })
       .then((res) => res.json())
-      .then(() => {
+      .then((data) => {
         reFetchImages();
       })
       .catch((error) => {
@@ -60,17 +59,14 @@ const Images = () => {
   };
 
   const handleDelete = () => {
-    const featureImageId = img[0]._id; // ID of the featured image
+    const featureImageId = img[0]._id;
 
-    // Check if the feature image is in the selected images
-    const imagesToDelete = selectedImages.includes(featureImageId)
-      ? [...selectedImages] // Include the featured image in deletion
-      : [...selectedImages, featureImageId]; // Ensure the featured image is included
+    const imagesToDelete = selectedImages.filter((id) => id !== featureImageId);
 
     if (imagesToDelete.length === 0) {
       Swal.fire({
-        title: "No Selection",
-        text: "Please select images to delete.",
+        title: "No Deletable Images",
+        text: "The featured image cannot be deleted. Please select other images.",
         icon: "warning",
         confirmButtonText: "Okay",
       });
@@ -93,9 +89,9 @@ const Images = () => {
           body: JSON.stringify({ ids: imagesToDelete }),
         })
           .then((res) => res.json())
-          .then(() => {
+          .then((data) => {
             setSelectedImages([]);
-            reFetchImages(); // Re-fetch images to update the UI
+            reFetchImages();
           })
           .catch((error) => {
             console.error("Error deleting images:", error);
@@ -113,7 +109,6 @@ const Images = () => {
       ) : (
         <>
           <div className="featured-image-container">
-            {/* First image displayed as featured */}
             {img.length > 0 && (
               <div className="featured-image-wrapper relative">
                 <img
@@ -121,9 +116,9 @@ const Images = () => {
                   alt="Featured"
                   className="featured-image"
                 />
-                <div className="absolute top-2 left-2 bg-yellow-500 text-white p-2 text-sm font-bold">
+                {/* <div className="absolute top-2 left-2 bg-purple-700 text-white p-2 text-sm font-bold">
                   Featured Image
-                </div>
+                </div> */}
               </div>
             )}
           </div>
@@ -136,10 +131,10 @@ const Images = () => {
                   {...provided.droppableProps}
                   className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6 droppable-gallery"
                 >
-                  {img.slice(1).map(({ _id, imageUrl }, index) => (
+                  {img.slice(0).map(({ _id, imageUrl }, index) => (
                     <Draggable
                       draggableId={_id.toString()}
-                      index={index + 1} // Adjust index due to featured image
+                      index={index + 1}
                       key={_id.toString()}
                     >
                       {(provided) => (
@@ -149,7 +144,6 @@ const Images = () => {
                           {...provided.dragHandleProps}
                           className="draggable-item relative"
                         >
-                          {/* Image and hoverable checkbox */}
                           <div className="relative group">
                             <img
                               src={imageUrl}
@@ -185,9 +179,7 @@ const Images = () => {
               <button
                 onClick={handleDelete}
                 className={`btn bg-purple-700 text-white mt-12 hover:bg-purple-500 ${
-                  selectedImages.length === 0 && img.length === 1
-                    ? "hidden"
-                    : ""
+                  selectedImages.length === 0 ? "hidden" : ""
                 }`}
               >
                 Delete Selected Images

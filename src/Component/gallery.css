@@ -45,7 +45,7 @@
 }
 
 .group:hover .checkbox-style {
-  opacity: 1 !important; /* Ensure checkbox is visible on hover */
+  opacity: 1 !important; 
 }
 
 .droppable-gallery {

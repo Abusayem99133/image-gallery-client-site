@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import useAxiosPublic from "../useAxiosPublic";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
 import { useForm } from "react-hook-form";
 import Images from "./Images";
 
