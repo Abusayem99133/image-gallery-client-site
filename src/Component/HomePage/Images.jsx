@@ -8,12 +8,12 @@ const Images = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Fetch images from the server
+  const reFetchImages = () => {
     setLoading(true);
-    fetch("https://image-gallery-server-site.vercel.app/galleryImage")
+    fetch("http://localhost:5000/galleryImage")
       .then((res) => res.json())
       .then((data) => {
-        // Ensure the data is in the format you expect
         setImg(data);
         setLoading(false);
       })
@@ -21,6 +21,10 @@ const Images = () => {
         console.error("Error fetching images:", error);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    reFetchImages();
   }, []);
 
   const onDragEnd = (result) => {
@@ -32,16 +36,15 @@ const Images = () => {
     reorderedImages.splice(destination.index, 0, movedItem);
     setImg(reorderedImages);
 
-    // Update image order and mark the first image as the feature image
-    const featureImageId = reorderedImages[0]._id; // First image as the feature
-    fetch("https://image-gallery-server-site.vercel.app/updateImageOrder", {
+    const featureImageId = reorderedImages[0]._id; // First image as featured
+    fetch("http://localhost:5000/updateImageOrder", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reorderedImages, featureImageId }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log("Image order and feature image updated successfully", data);
+      .then(() => {
+        reFetchImages();
       })
       .catch((error) => {
         console.error("Error updating image order:", error);
@@ -57,7 +60,14 @@ const Images = () => {
   };
 
   const handleDelete = () => {
-    if (selectedImages.length === 0) {
+    const featureImageId = img[0]._id; // ID of the featured image
+
+    // Check if the feature image is in the selected images
+    const imagesToDelete = selectedImages.includes(featureImageId)
+      ? [...selectedImages] // Include the featured image in deletion
+      : [...selectedImages, featureImageId]; // Ensure the featured image is included
+
+    if (imagesToDelete.length === 0) {
       Swal.fire({
         title: "No Selection",
         text: "Please select images to delete.",
@@ -74,56 +84,21 @@ const Images = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, delete them!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleting Images",
-          text: "Please wait while we delete the selected images.",
-          icon: "info",
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        fetch("https://image-gallery-server-site.vercel.app/galleryImage", {
+        fetch("http://localhost:5000/galleryImage", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ids: selectedImages }),
+          body: JSON.stringify({ ids: imagesToDelete }),
         })
           .then((res) => res.json())
-          .then((data) => {
-            Swal.close();
-            if (data.message === "Images deleted successfully") {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Selected images have been deleted.",
-                icon: "success",
-                confirmButtonText: "Okay",
-              });
-              setImg((prevImg) =>
-                prevImg.filter((image) => !selectedImages.includes(image._id))
-              );
-              setSelectedImages([]);
-            } else {
-              Swal.fire({
-                title: "Error",
-                text: data.message,
-                icon: "error",
-                confirmButtonText: "Retry",
-              });
-            }
+          .then(() => {
+            setSelectedImages([]);
+            reFetchImages(); // Re-fetch images to update the UI
           })
           .catch((error) => {
-            Swal.close();
             console.error("Error deleting images:", error);
-            Swal.fire({
-              title: "Error",
-              text: "There was an issue deleting the images.",
-              icon: "error",
-              confirmButtonText: "Retry",
-            });
           });
       }
     });
@@ -137,19 +112,35 @@ const Images = () => {
         </div>
       ) : (
         <>
+          <div className="featured-image-container">
+            {/* First image displayed as featured */}
+            {img.length > 0 && (
+              <div className="featured-image-wrapper relative">
+                <img
+                  src={img[0].imageUrl}
+                  alt="Featured"
+                  className="featured-image"
+                />
+                <div className="absolute top-2 left-2 bg-yellow-500 text-white p-2 text-sm font-bold">
+                  Featured Image
+                </div>
+              </div>
+            )}
+          </div>
+
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable-gallery">
               {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 droppable-gallery"
+                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6 droppable-gallery"
                 >
-                  {img.map(({ _id, imageUrl }, index) => (
+                  {img.slice(1).map(({ _id, imageUrl }, index) => (
                     <Draggable
-                      draggableId={_id.toString()} // Ensure _id is unique and a string
-                      index={index}
-                      key={_id.toString()} // Ensure key is unique and consistent
+                      draggableId={_id.toString()}
+                      index={index + 1} // Adjust index due to featured image
+                      key={_id.toString()}
                     >
                       {(provided) => (
                         <div
@@ -158,22 +149,27 @@ const Images = () => {
                           {...provided.dragHandleProps}
                           className="draggable-item relative"
                         >
-                          {/* Feature text */}
-                          <div
-                            className={`feature-text ${
-                              selectedImages.includes(_id) ? "hidden" : "block"
-                            }`}
-                          >
-                            Feature
+                          {/* Image and hoverable checkbox */}
+                          <div className="relative group">
+                            <img
+                              src={imageUrl}
+                              alt={`Image-${index + 1}`}
+                              className={`image-style ${
+                                selectedImages.includes(_id) ? "selected" : ""
+                              }`}
+                              onClick={() => handleImageSelect(_id)}
+                            />
+                            <input
+                              type="checkbox"
+                              checked={selectedImages.includes(_id)}
+                              onChange={() => handleImageSelect(_id)}
+                              className={`absolute top-2 right-2 checkbox-style group-hover:opacity-100 ${
+                                selectedImages.includes(_id)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              }`}
+                            />
                           </div>
-                          <img
-                            src={imageUrl}
-                            alt={`Image-${index}`}
-                            className={`image-style ${
-                              selectedImages.includes(_id) ? "selected" : ""
-                            }`}
-                            onClick={() => handleImageSelect(_id)}
-                          />
                         </div>
                       )}
                     </Draggable>
@@ -184,13 +180,14 @@ const Images = () => {
             </Droppable>
           </DragDropContext>
 
-          {/* Show the delete button only if there's at least one image */}
           {img.length > 0 && (
             <div className="text-center">
               <button
                 onClick={handleDelete}
                 className={`btn bg-purple-700 text-white mt-12 hover:bg-purple-500 ${
-                  selectedImages.length === 0 ? "hidden" : ""
+                  selectedImages.length === 0 && img.length === 1
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 Delete Selected Images

@@ -1,11 +1,26 @@
+.featured-image-container {
+  width: 100%;
+}
+
+.featured-image-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.featured-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 400px;
+}
+
 .draggable-item {
   padding: 8px;
   border: 2px solid #ddd;
   background-color: white;
-  transition: background-color 0.2s ease;
   cursor: grab;
-  
-  transition: transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .draggable-item:active {
@@ -17,45 +32,44 @@
   width: 100%;
   height: auto;
   object-fit: cover;
-  cursor: pointer;
   transition: transform 0.2s;
 }
-/* gallery.css */
-.droppable-gallery {
-  min-height: 100px; /* Add a minimum height to ensure it's always present */
-}
-
-
-.draggable-item.dragging {
-  opacity: 0.5;
-  transform: rotate(3deg);
-  border: 2px solid #007bff;
-}
-
 
 .image-style.selected {
-  border: 2px solid #007bff; /* Example border color for selected images */
-  transform: scale(1.05); /* Optional: scale effect on selected images */
+  border: 2px solid #007bff;
+  transform: scale(1.05);
 }
 
+.checkbox-style {
+  cursor: pointer;
+}
+
+.group:hover .checkbox-style {
+  opacity: 1 !important; /* Ensure checkbox is visible on hover */
+}
+
+.droppable-gallery {
+  min-height: 100px;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.feature-text {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  z-index: 10;
-}
-
-.image-style.selected .feature-text {
-  display: none;
-}
-
-

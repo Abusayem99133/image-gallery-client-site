@@ -1,11 +1,17 @@
-import axios from "axios";
+import Gallery from "./HomePage/Gallery";
+import Images from "./HomePage/Images";
 
-// Image upload
-export const imageUpload = async (image) => {
-  const formData = new FormData();
-  formData.append("image", image);
-  const { data } = await axios.post(`
-      https://api.imgbb.com/1/upload?key=${import.meta.env.IMGBB_API_KEY},
-      formData`);
-  return data.data.display_url;
+const [reload, setReload] = useState(false);
+
+const reFetchImages = () => {
+  setReload((prev) => !prev); // Toggle state to force re-render
 };
+
+return (
+  <div>
+    <Gallery reFetchImages={reFetchImages} />
+    <Images reload={reload} />
+  </div>
+);
+
+export default index;
