@@ -13,6 +13,7 @@ const Images = () => {
     fetch("http://localhost:5000/galleryImage")
       .then((res) => res.json())
       .then((data) => {
+        // Ensure the data is in the format you expect
         setImg(data);
         setLoading(false);
       })
@@ -31,11 +32,20 @@ const Images = () => {
     reorderedImages.splice(destination.index, 0, movedItem);
     setImg(reorderedImages);
 
+    // Update image order and mark the first image as the feature image
+    const featureImageId = reorderedImages[0]._id; // First image as the feature
     fetch("http://localhost:5000/updateImageOrder", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reorderedImages }),
-    });
+      body: JSON.stringify({ reorderedImages, featureImageId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Image order and feature image updated successfully", data);
+      })
+      .catch((error) => {
+        console.error("Error updating image order:", error);
+      });
   };
 
   const handleImageSelect = (id) => {
@@ -131,24 +141,31 @@ const Images = () => {
             <Droppable droppableId="droppable-gallery">
               {(provided) => (
                 <div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 droppable-gallery"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 droppable-gallery"
                 >
                   {img.map(({ _id, imageUrl }, index) => (
                     <Draggable
-                      draggableId={_id.toString()}
+                      draggableId={_id.toString()} // Ensure _id is unique and a string
                       index={index}
-                      key={_id}
+                      key={_id.toString()} // Ensure key is unique and consistent
                     >
                       {(provided) => (
                         <div
-                          key={_id}
                           ref={provided.innerRef}
-                          {...provided.dragHandleProps}
                           {...provided.draggableProps}
-                          className="draggable-item"
+                          {...provided.dragHandleProps}
+                          className="draggable-item relative"
                         >
+                          {/* Feature text */}
+                          <div
+                            className={`feature-text ${
+                              selectedImages.includes(_id) ? "hidden" : "block"
+                            }`}
+                          >
+                            Feature
+                          </div>
                           <img
                             src={imageUrl}
                             alt={`Image-${index}`}
@@ -166,12 +183,20 @@ const Images = () => {
               )}
             </Droppable>
           </DragDropContext>
-          <button
-            onClick={handleDelete}
-            className="btn bg-purple-700 text-white mt-12"
-          >
-            Delete Selected Images
-          </button>
+
+          {/* Show the delete button only if there's at least one image */}
+          {img.length > 0 && (
+            <div className="text-center">
+              <button
+                onClick={handleDelete}
+                className={`btn bg-purple-700 text-white mt-12 hover:bg-purple-500 ${
+                  selectedImages.length === 0 ? "hidden" : ""
+                }`}
+              >
+                Delete Selected Images
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
