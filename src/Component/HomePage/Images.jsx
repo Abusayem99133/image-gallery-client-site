@@ -10,7 +10,7 @@ const Images = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:5000/galleryImage")
+    fetch("https://image-gallery-server-site.vercel.app/galleryImage")
       .then((res) => res.json())
       .then((data) => {
         // Ensure the data is in the format you expect
@@ -34,7 +34,7 @@ const Images = () => {
 
     // Update image order and mark the first image as the feature image
     const featureImageId = reorderedImages[0]._id; // First image as the feature
-    fetch("http://localhost:5000/updateImageOrder", {
+    fetch("https://image-gallery-server-site.vercel.app/updateImageOrder", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reorderedImages, featureImageId }),
@@ -87,7 +87,7 @@ const Images = () => {
           },
         });
 
-        fetch("http://localhost:5000/galleryImage", {
+        fetch("https://image-gallery-server-site.vercel.app/galleryImage", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids: selectedImages }),

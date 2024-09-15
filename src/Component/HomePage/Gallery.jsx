@@ -33,7 +33,7 @@ const Gallery = () => {
 
         // Try to push (POST) the image first
         const backendResponse = await axiosPublic.post(
-          "http://localhost:5000/galleryI",
+          "https://image-gallery-server-site.vercel.app/galleryI",
           upload,
           {
             headers: {
@@ -53,7 +53,7 @@ const Gallery = () => {
         } else if (backendResponse.data.exists) {
           // If image already exists, use PATCH to update
           const patchResponse = await axiosPublic.patch(
-            `http://localhost:5000/galleryI/${backendResponse.data.imageId}`,
+            `https://image-gallery-server-site.vercel.app/galleryI/${backendResponse.data.imageId}`,
             upload,
             {
               headers: {
