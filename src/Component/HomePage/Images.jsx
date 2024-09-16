@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import "../../Component/gallery.css";
 
 const Images = () => {
   const [img, setImg] = useState([]);
-  const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImages, setSelectedImages] = useState([]);
 
   const reFetchImages = () => {
     setLoading(true);
@@ -60,7 +60,6 @@ const Images = () => {
 
   const handleDelete = () => {
     const featureImageId = img[0]._id;
-
     const imagesToDelete = selectedImages.filter((id) => id !== featureImageId);
 
     if (imagesToDelete.length === 0) {
@@ -116,9 +115,6 @@ const Images = () => {
                   alt="Featured"
                   className="featured-image"
                 />
-                {/* <div className="absolute top-2 left-2 bg-purple-700 text-white p-2 text-sm font-bold">
-                  Featured Image
-                </div> */}
               </div>
             )}
           </div>
@@ -134,7 +130,7 @@ const Images = () => {
                   {img.slice(0).map(({ _id, imageUrl }, index) => (
                     <Draggable
                       draggableId={_id.toString()}
-                      index={index + 1}
+                      index={index}
                       key={_id.toString()}
                     >
                       {(provided) => (
