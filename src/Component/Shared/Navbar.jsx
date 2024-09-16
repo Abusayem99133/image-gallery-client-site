@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const navItem = (
     <>
       <li>
-        <Link>Home</Link>
+        <Link to="/">Home</Link>
       </li>
 
       <li>
@@ -12,9 +12,6 @@ const Navbar = () => {
       </li>
       <li>
         <Link>Blog</Link>
-      </li>
-      <li>
-        <Link>Join US</Link>
       </li>
     </>
   );
@@ -52,7 +49,9 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{navItem}</ul>
         </div>
         <div className="navbar-end">
-          <a className="btn bg-purple-700 text-white">Profile</a>
+          <Link to="/signIn">
+            <a className="btn bg-purple-700 text-white">Join US</a>
+          </Link>
         </div>
       </div>
     </div>
